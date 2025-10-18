@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balık Avı Optimizer - Optimum Balıkçılık Zamanı</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        /* Header - Minimal & Professional */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 24px 0;
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 400;
+            margin-top: -2px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Search Section - Clean & Minimal */
+        .search-section {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .search-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            outline: none;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        #map {
+            height: 280px;
+            border-radius: 6px;
+            display: none;
+            margin-top: 16px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .suggestions {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .suggestion-item {
+            padding: 10px 14px;
+            background: var(--gray-50);
+            border-radius: 6px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .suggestion-item:hover {
+            background: var(--gray-100);
+        }
+
+        /* Messages */
+        .loading, .error {
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+            display: none;
+            font-size: 0.875rem;
+        }
+
+        .loading {
+            color: var(--gray-600);
+        }
+
+        .error {
+            background: #fef2f2;
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        /* Location Info */
+        .location-info {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        /* Chart Section - Enterprise Look */
+        .chart-section {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .section-subtitle {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 360px;
+        }
+
+        .chart-hint {
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 0.75rem;
+            margin-top: 12px;
+        }
+
+        /* Best Times - Minimalist Cards */
+        .best-times-section {
+            display: none;
+        }
+
+        .best-times-header {
+            margin-bottom: 16px;
+        }
+
+        .best-times-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .time-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .time-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .time-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .time-info {
+            flex: 1;
+        }
+
+        .time-date {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .time-hour {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .score-badge {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            line-height: 1;
+        }
+
+        .time-category {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+            padding: 4px 0;
+        }
+
+        .weather-summary {
+            display: flex;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-100);
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        .weather-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Modal - Clean & Professional */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 40px auto;
+            border-radius: 12px;
+            max-width: 560px;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .modal-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-400);
+            line-height: 1;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .close-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .modal-score-section {
+            padding: 24px;
+            text-align: center;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-score {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .modal-category {
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-block;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-section {
+            margin-bottom: 24px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+
+        .factor-list {
+            list-style: none;
+        }
+
+        .factor-item {
+            padding: 10px 12px;
+            background: var(--gray-50);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8125rem;
+        }
+
+        .factor-name {
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        .factor-impact {
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .factor-impact.positive {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .factor-impact.negative {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .factor-impact.neutral {
+            background: var(--gray-200);
+            color: var(--gray-600);
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .weather-box {
+            background: var(--gray-50);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+
+        .weather-label {
+            font-size: 0.6875rem;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .weather-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .search-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+
+            .best-times-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20px;
+                max-width: calc(100% - 40px);
+            }
+
+            .weather-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .logo-text h1 {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🎣</div>
+                <div class="logo-text">
+                    <h1>Fishing Optimizer</h1>
+                    <p>Enterprise Edition</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Search Section -->
+        <div class="search-section">
+            <label class="search-label">Location</label>
+            <div class="search-group">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Search city or region..."
+                    autocomplete="off"
+                >
+                <button class="btn btn-primary" onclick="searchLocation()">Search</button>
+                <button class="btn btn-outline" onclick="toggleMap()">Map</button>
+            </div>
+            <ul id="suggestions" class="suggestions"></ul>
+            <div id="map"></div>
+        </div>
+
+        <!-- Messages -->
+        <div class="error" id="error"></div>
+        <div class="loading" id="loading">Loading data...</div>
+
+        <!-- Location Info -->
+        <div class="location-info" id="locationInfo"></div>
+
+        <!-- Chart Section -->
+        <div class="chart-section" id="chartSection">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Activity Forecast</div>
+                    <div class="section-subtitle">72-hour prediction model</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="fishingChart"></canvas>
+            </div>
+            <div class="chart-hint">Click on any bar to view detailed analysis</div>
+        </div>
+
+        <!-- Best Times -->
+        <div class="best-times-section" id="bestTimesSection">
+            <div class="best-times-header">
+                <div class="section-title">Optimal Windows</div>
+                <div class="section-subtitle">Best conditions for fishing</div>
+            </div>
+            <div class="best-times-grid" id="bestTimesGrid"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <div class="modal-title" id="modalDate"></div>
+                <div class="modal-subtitle" id="modalTime"></div>
+            </div>
+            <div class="modal-score-section">
+                <div class="modal-score" id="modalScore"></div>
+                <div class="modal-category" id="modalLabel"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <div class="modal-section-title">Impact Factors</div>
+                    <ul class="factor-list" id="modalFactors"></ul>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-section-title">Weather Conditions</div>
+                    <div class="weather-grid" id="modalWeather"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map = null;
+        let marker = null;
+        let selectedLocation = null;
+        let fishingChart = null;
+        let currentData = null;
+
+        // Harita toggle
+        function toggleMap() {
+            const mapElement = document.getElementById('map');
+            if (mapElement.style.display === 'none' || !mapElement.style.display) {
+                mapElement.style.display = 'block';
+                if (!map) {
+                    initMap();
+                }
+            } else {
+                mapElement.style.display = 'none';
+            }
+        }
+
+        // Harita başlat
+        function initMap() {
+            map = L.map('map').setView([39.0, 35.0], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            map.on('click', function(e) {
+                selectLocationFromMap(e.latlng.lat, e.latlng.lng);
+            });
+        }
+
+        // Haritadan lokasyon seç
+        function selectLocationFromMap(lat, lng) {
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lng]).addTo(map);
+            selectedLocation = { latitude: lat, longitude: lng, name: `Seçili Konum` };
+            fetchWeatherData(lat, lng, selectedLocation.name);
+        }
+
+        // Arama inputu
+        document.getElementById('searchInput').addEventListener('input', async function(e) {
+            const query = e.target.value.trim();
+            const suggestionsList = document.getElementById('suggestions');
+            
+            if (query.length < 2) {
+                suggestionsList.innerHTML = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/geocode?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                suggestionsList.innerHTML = '';
+                
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(location => {
+                        const li = document.createElement('li');
+                        li.className = 'suggestion-item';
+                        li.textContent = `${location.name}${location.admin1 ? ', ' + location.admin1 : ''}${location.country ? ', ' + location.country : ''}`;
+                        li.onclick = () => selectLocation(location);
+                        suggestionsList.appendChild(li);
+                    });
+                }
+            } catch (error) {
+                console.error('Arama hatası:', error);
+            }
+        });
+
+        // Lokasyon seç
+        function selectLocation(location) {
+            selectedLocation = location;
+            document.getElementById('searchInput').value = location.name;
+            document.getElementById('suggestions').innerHTML = '';
+            
+            fetchWeatherData(location.latitude, location.longitude, location.name);
+            
+            if (map) {
+                map.setView([location.latitude, location.longitude], 10);
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                marker = L.marker([location.latitude, location.longitude]).addTo(map);
+            }
+        }
+
+        // Arama butonu
+        function searchLocation() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query.length < 2) {
+                showError('Lütfen en az 2 karakter girin');
+                return;
+            }
+        }
+
+        // Hava durumu verisi çek
+        async function fetchWeatherData(lat, lon, locationName) {
+            showLoading(true);
+            hideError();
+            
+            try {
+                const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+                
+                if (!response.ok) {
+                    throw new Error('Veri alınamadı');
+                }
+                
+                const data = await response.json();
+                currentData = data;
+                displayResults(data, locationName);
+                
+            } catch (error) {
+                showError('Hava durumu verileri alınamadı. Lütfen tekrar deneyin.');
+                console.error('API Hatası:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Sonuçları göster
+        function displayResults(data, locationName) {
+            // Lokasyon bilgisi
+            document.getElementById('locationInfo').textContent = `📍 ${locationName}`;
+            document.getElementById('locationInfo').style.display = 'block';
+
+            // Grafik oluştur
+            createChart(data);
+            document.getElementById('chartSection').style.display = 'block';
+
+            // En iyi zamanlar
+            displayBestTimes(data);
+        }
+
+        // Grafik oluştur - Enterprise style
+        function createChart(data) {
+            const ctx = document.getElementById('fishingChart').getContext('2d');
+            
+            if (fishingChart) {
+                fishingChart.destroy();
+            }
+
+            const labels = data.hourly.map(h => {
+                const date = new Date(h.time);
+                const day = date.getDate();
+                const month = date.toLocaleDateString('en-US', { month: 'short' });
+                const hour = date.getHours().toString().padStart(2, '0');
+                return `${month} ${day}, ${hour}:00`;
+            });
+
+            const scores = data.hourly.map(h => h.score);
+            const colors = data.hourly.map(h => h.category.color);
+
+            fishingChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Activity Score',
+                        data: scores,
+                        backgroundColor: colors,
+                        borderRadius: 3,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            showDetailModal(data.hourly[index]);
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    const hour = data.hourly[context.dataIndex];
+                                    return [
+                                        `Score: ${context.parsed.y}`,
+                                        `Status: ${hour.category.label}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: '#f3f4f6'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                },
+                                color: '#6b7280'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Activity Score',
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                },
+                                color: '#374151'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45,
+                                font: {
+                                    size: 10
+                                },
+                                color: '#6b7280'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // En iyi zamanları göster
+        function displayBestTimes(data) {
+            const grid = document.getElementById('bestTimesGrid');
+            grid.innerHTML = '';
+
+            if (data.bestTimes && data.bestTimes.length > 0) {
+                data.bestTimes.forEach(time => {
+                    const card = createBestTimeCard(time);
+                    grid.appendChild(card);
+                });
+                document.getElementById('bestTimesSection').style.display = 'block';
+            }
+        }
+
+        // En iyi zaman kartı oluştur - Enterprise minimal
+        function createBestTimeCard(time) {
+            const card = document.createElement('div');
+            card.className = 'time-card';
+            card.onclick = () => showDetailModal(time);
+
+            const date = new Date(time.time);
+            const dateStr = date.toLocaleDateString('en-US', { 
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+            const timeStr = date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false
+            });
+
+            card.innerHTML = `
+                <div class="time-card-header">
+                    <div class="time-info">
+                        <div class="time-date">${dateStr}</div>
+                        <div class="time-hour">${timeStr}</div>
+                    </div>
+                    <div class="score-badge" style="background: ${time.category.color}">
+                        ${time.score}
+                    </div>
+                </div>
+                <div class="time-category">${time.category.label}</div>
+                <div class="weather-summary">
+                    <div class="weather-item">
+                        <span>🌡️</span>
+                        <span>${time.weather.temperature.toFixed(0)}°C</span>
+                    </div>
+                    <div class="weather-item">
+                        <span>💨</span>
+                        <span>${time.weather.windSpeed.toFixed(0)} km/h</span>
+                    </div>
+                    <div class="weather-item">
+                        <span>☁️</span>
+                        <span>${time.weather.cloudCover}%</span>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Detay modalını göster - Enterprise style
+        function showDetailModal(hourData) {
+            const date = new Date(hourData.time);
+            
+            // Tarih ve saat
+            document.getElementById('modalDate').textContent = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('modalTime').textContent = date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            // Skor
+            document.getElementById('modalScore').textContent = hourData.score;
+            document.getElementById('modalScore').style.color = hourData.category.color;
+            
+            const labelElement = document.getElementById('modalLabel');
+            labelElement.textContent = hourData.category.label;
+            labelElement.style.background = hourData.category.color;
+
+            // Faktörler
+            const factorsList = document.getElementById('modalFactors');
+            factorsList.innerHTML = '';
+            hourData.factors.forEach(factor => {
+                const li = document.createElement('li');
+                li.className = 'factor-item';
+                
+                const impactClass = factor.impact > 0 ? 'positive' : factor.impact < 0 ? 'negative' : 'neutral';
+                const impactText = factor.impact > 0 ? `+${factor.impact}` : factor.impact;
+                
+                li.innerHTML = `
+                    <div class="factor-name"><strong>${factor.name}:</strong> ${factor.value}</div>
+                    <span class="factor-impact ${impactClass}">${impactText}</span>
+                `;
+                factorsList.appendChild(li);
+            });
+
+            // Hava durumu
+            const weatherGrid = document.getElementById('modalWeather');
+            weatherGrid.innerHTML = `
+                <div class="weather-box">
+                    <div class="weather-icon">🌡️</div>
+                    <div class="weather-label">Temp</div>
+                    <div class="weather-value">${hourData.weather.temperature.toFixed(1)}°C</div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-icon">💨</div>
+                    <div class="weather-label">Wind</div>
+                    <div class="weather-value">${hourData.weather.windSpeed.toFixed(1)} km/h</div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-icon">☁️</div>
+                    <div class="weather-label">Cloud</div>
+                    <div class="weather-value">${hourData.weather.cloudCover}%</div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-icon">🌧️</div>
+                    <div class="weather-label">Rain</div>
+                    <div class="weather-value">${hourData.weather.precipitation.toFixed(1)} mm</div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-icon">📊</div>
+                    <div class="weather-label">Pressure</div>
+                    <div class="weather-value">${hourData.weather.pressure.toFixed(0)} hPa</div>
+                </div>
+            `;
+
+            // Modalı göster
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        // Modal kapat
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        // Modal dışına tıklayınca kapat
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Yardımcı fonksiyonlar
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        // Enter tuşu ile arama
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchLocation();
+            }
+        });
+    </script>
+</body>
+</html>
