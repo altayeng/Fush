@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balık Avı Optimizer - Optimum Balıkçılık Zamanı</title>
+    <title>Balık Avı Optimizer - Optimum Zamanlar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="languages.js"></script>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #e0f2fe;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
         }
 
         * {
@@ -33,316 +43,776 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--gray-50);
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(14, 165, 233, 0.04) 0%, transparent 50%),
+                linear-gradient(180deg, var(--gray-50) 0%, rgba(241, 245, 249, 0.8) 50%, var(--gray-50) 100%);
+            background-attachment: fixed;
             color: var(--gray-900);
             line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Header - Minimal & Professional */
-        .header {
-            background: white;
-            border-bottom: 1px solid var(--gray-200);
-            padding: 24px 0;
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%230ea5e9' fill-opacity='0.02'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E") repeat,
+                linear-gradient(45deg, transparent 49%, rgba(14, 165, 233, 0.01) 50%, transparent 51%);
+            background-size: 40px 40px, 100px 100px;
+            animation: oceanWaves 20s linear infinite;
+            pointer-events: none;
+            z-index: -1;
         }
 
-        .header-content {
-            max-width: 1280px;
+        @keyframes oceanWaves {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(40px) translateY(-20px); }
+        }
+
+        @keyframes waveAnimation {
+            0%, 100% {
+                background-position: 0 0;
+            }
+            50% {
+                background-position: 100px 0;
+            }
+        }
+
+        @keyframes waveMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 200px 0;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 0 80px;
+            position: relative;
+            overflow: hidden;
+            animation: heroFadeIn 1s ease-out;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                url("data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='waveGrad' x1='0%25' x2='0%25' y1='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(255,255,255,0.15);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(255,255,255,0.05);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0,40 Q50,20 100,40 T200,40 L200,60 Q150,75 100,60 T0,60 Z' fill='url(%23waveGrad)' /%3E%3Cpath d='M0,60 Q50,45 100,60 T200,60 L200,85 Q150,95 100,85 T0,85 Z' fill='rgba(255,255,255,0.08)' /%3E%3Cpath d='M0,80 Q50,70 100,80 T200,80 L200,100 Q150,110 100,100 T0,100 Z' fill='rgba(255,255,255,0.04)' /%3E%3C/svg%3E"),
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            background-size: 200px 120px, auto, auto, auto;
+            animation: waterFlow 8s ease-in-out infinite, waveAnimation 5s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: 
+                url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='waveGrad2' x1='0%25' x2='0%25' y1='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(255,255,255,0.3);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(14,165,233,0.2);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0,30 Q25,15 50,30 T100,30 T150,30 T200,30 L200,50 Q175,65 150,50 T100,50 T50,50 T0,50 Z' fill='url(%23waveGrad2)' stroke='rgba(255,255,255,0.2)' stroke-width='1'/%3E%3Cpath d='M0,50 Q25,35 50,50 T100,50 T150,50 T200,50 L200,70 Q175,85 150,70 T100,70 T50,70 T0,70 Z' fill='rgba(14,165,233,0.15)' stroke='rgba(255,255,255,0.15)' stroke-width='0.5'/%3E%3Cpath d='M0,65 Q25,55 50,65 T100,65 T150,65 T200,65 L200,90 Q175,95 150,90 T100,90 T50,90 T0,90 Z' fill='rgba(14,165,233,0.1)' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            background-position: 0 0;
+            background-size: 200px 100px;
+            animation: waveShimmer 4s ease-in-out infinite, waveMove 6s linear infinite;
+            z-index: 2;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        @keyframes heroFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes waterFlow {
+            0%, 100% {
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 0.8;
+            }
+            33% {
+                transform: translateX(10px) translateY(-5px) scale(1.05);
+                opacity: 1;
+            }
+            66% {
+                transform: translateX(-10px) translateY(5px) scale(0.95);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes waveShimmer {
+            0%, 100% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(100%);
+                opacity: 1;
+            }
+        }
+
+        .hero-content {
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            text-align: center;
+            position: relative;
+            z-index: 10;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .fish {
+            position: absolute;
+            font-size: 2.5rem;
+            z-index: 3;
+            opacity: 0.8;
+            animation: fishSwim 8s ease-in-out infinite;
         }
 
-        .logo-icon {
+        .fish:nth-child(1) {
+            left: -50px;
+            top: 15%;
+            animation: fishSwimLeftToRight 9s ease-in-out infinite;
+            animation-delay: 0s;
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .fish:nth-child(2) {
+            right: -50px;
+            top: 35%;
+            animation: fishSwimRightToLeft 11s ease-in-out infinite;
+            animation-delay: 1s;
+            font-size: 2.2rem;
+            opacity: 0.7;
+            transform: scaleX(-1);
+        }
+
+        .fish:nth-child(3) {
+            left: -50px;
+            bottom: 20%;
+            animation: fishSwimLeftToRight 13s ease-in-out infinite;
+            animation-delay: 2s;
             font-size: 1.8rem;
+            opacity: 0.5;
         }
 
-        .logo-text h1 {
-            font-size: 1.4rem;
+        .fish:nth-child(4) {
+            right: -50px;
+            top: 60%;
+            animation: fishSwimRightToLeft 10s ease-in-out infinite;
+            animation-delay: 0.5s;
+            font-size: 2.3rem;
+            opacity: 0.65;
+            transform: scaleX(-1);
+        }
+
+        .fish:nth-child(5) {
+            left: -50px;
+            top: 50%;
+            animation: fishSwimLeftToRight 12s ease-in-out infinite;
+            animation-delay: 3s;
+            font-size: 1.9rem;
+            opacity: 0.55;
+        }
+
+        @keyframes fishSwimLeftToRight {
+            0% {
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateX(100vw) translateY(20px) scale(1.05);
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(100vw) translateY(0) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fishSwimRightToLeft {
+            0% {
+                transform: translateX(0) translateY(0) scale(1) scaleX(-1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateX(-100vw) translateY(20px) scale(1.05) scaleX(-1);
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(-100vw) translateY(0) scale(1) scaleX(-1);
+                opacity: 0;
+            }
+        }
+
+        .hero-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-5px) rotate(1deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(0deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(-1deg);
+            }
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 4vw, 3rem);
             font-weight: 700;
-            color: var(--gray-900);
+            margin-bottom: 12px;
             letter-spacing: -0.02em;
+            animation: titleSlideIn 1.2s ease-out 0.3s both;
         }
 
-        .logo-text p {
-            font-size: 0.75rem;
-            color: var(--gray-500);
+        .hero-subtitle {
+            font-size: 1rem;
             font-weight: 400;
-            margin-top: -2px;
+            opacity: 0.95;
+            max-width: 500px;
+            margin: 0 auto 0;
+            line-height: 1.6;
+            animation: subtitleSlideIn 1.2s ease-out 0.6s both;
         }
 
-        /* Container */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 32px 24px;
+        @keyframes titleSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Search Section - Clean & Minimal */
+        @keyframes subtitleSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Search Section */
         .search-section {
             background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
+            margin: -60px auto 0;
+            max-width: 800px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+            animation: searchSlideUp 1s ease-out 0.8s both;
+            transform: translateY(0);
         }
 
-        .search-label {
-            font-size: 0.875rem;
+        @keyframes searchSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-title {
+            font-size: 1.5rem;
             font-weight: 600;
-            color: var(--gray-700);
+            color: var(--gray-900);
             margin-bottom: 8px;
-            display: block;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 1s both;
         }
 
-        .search-group {
+        .search-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out 1.1s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-form {
             display: flex;
-            gap: 8px;
+            gap: 12px;
         }
 
         .search-input {
             flex: 1;
-            padding: 10px 14px;
-            border: 1px solid var(--gray-300);
-            border-radius: 6px;
-            font-size: 0.875rem;
-            transition: all 0.15s;
+            padding: 16px 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             outline: none;
             background: white;
+            transform: scale(1);
+            min-width: 300px;
         }
 
         .search-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            transform: scale(1.02);
         }
 
-        .btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-            white-space: nowrap;
+        .search-input:hover {
+            border-color: var(--gray-300);
         }
 
-        .btn-primary {
+        .search-btn {
+            padding: 16px 24px;
             background: var(--primary);
             color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .btn-primary:hover {
+        .search-btn:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
         }
 
-        .btn-outline {
-            background: white;
-            border: 1px solid var(--gray-300);
+        .search-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .map-toggle {
+            display: block;
+            padding: 16px 24px;
+            background: var(--gray-100);
             color: var(--gray-700);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out 1.3s both;
+            flex-shrink: 0;
         }
 
-        .btn-outline:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-400);
+        .map-toggle:hover {
+            background: var(--gray-200);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        #map {
-            height: 280px;
-            border-radius: 6px;
+        .map-container {
+            height: 300px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
             display: none;
-            margin-top: 16px;
             border: 1px solid var(--gray-200);
+            animation: mapExpand 0.5s ease-out both;
+        }
+
+        @keyframes mapExpand {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .suggestions {
-            list-style: none;
-            margin-top: 8px;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(14, 165, 233, 0.1);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(14, 165, 233, 0.05);
+            z-index: 1000;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            backdrop-filter: blur(10px);
+            animation: suggestionsFadeIn 0.2s ease-out;
+        }
+
+        @keyframes suggestionsFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .suggestion-item {
-            padding: 10px 14px;
-            background: var(--gray-50);
-            border-radius: 6px;
-            margin-bottom: 4px;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             cursor: pointer;
-            transition: all 0.15s;
-            font-size: 0.875rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
             color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .suggestion-item::before {
+            content: '📍';
+            font-size: 1.1rem;
+            opacity: 0.7;
         }
 
         .suggestion-item:hover {
-            background: var(--gray-100);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(14, 165, 233, 0.04) 100%);
+            color: var(--primary);
+            transform: translateX(4px);
         }
 
-        /* Messages */
-        .loading, .error {
-            background: white;
-            padding: 16px;
-            border-radius: 6px;
+        .suggestion-item:hover::before {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+        }
+
+        .suggestion-item:first-child {
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        /* Status Messages */
+        .status-message {
             text-align: center;
-            margin-bottom: 24px;
-            border: 1px solid var(--gray-200);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 40px;
             display: none;
-            font-size: 0.875rem;
         }
 
         .loading {
-            color: var(--gray-600);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
 
         .error {
             background: #fef2f2;
             color: var(--danger);
-            border-color: #fecaca;
+            border: 1px solid #fecaca;
         }
 
-        /* Location Info */
-        .location-info {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: 6px;
-            padding: 12px 16px;
-            margin-bottom: 24px;
+        /* Results Section */
+        .results-section {
             display: none;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-700);
+            animation: resultsFadeIn 0.8s ease-out both;
         }
 
-        /* Chart Section - Enterprise Look */
-        .chart-section {
-            background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            display: none;
+        @keyframes resultsFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-
-        .section-subtitle {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            margin-top: 2px;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 360px;
-        }
-
-        .chart-hint {
+        .results-header {
             text-align: center;
-            color: var(--gray-400);
-            font-size: 0.75rem;
-            margin-top: 12px;
+            margin-bottom: 40px;
         }
 
-        /* Best Times - Minimalist Cards */
-        .best-times-section {
-            display: none;
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
         }
 
-        .best-times-header {
-            margin-bottom: 16px;
+        .results-subtitle {
+            font-size: 1rem;
+            color: var(--gray-600);
         }
 
+        /* Best Times Grid */
         .best-times-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
         }
 
         .time-card {
             background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
             border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 16px;
-            transition: all 0.2s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
+            overflow: hidden;
+            animation: cardFadeIn 0.6s ease-out both;
+            animation-delay: calc(var(--card-index, 0) * 0.1s);
+        }
+
+        .time-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+            transition: all 0.3s ease;
         }
 
         .time-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        .time-card-header {
+        .time-card:hover::before {
+            height: 6px;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .time-card.excellent::before { background: var(--success); }
+        .time-card.good::before { background: var(--primary); }
+        .time-card.fair::before { background: var(--warning); }
+        .time-card.poor::before { background: var(--danger); }
+
+        .time-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
-        .time-info {
-            flex: 1;
+        .time-info h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
         }
 
         .time-date {
             font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 2px;
-        }
-
-        .time-hour {
-            font-size: 0.75rem;
             color: var(--gray-500);
         }
 
         .score-badge {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
             color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            line-height: 1;
+            min-width: 60px;
+            text-align: center;
         }
 
         .time-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 0.75rem;
-            color: var(--gray-600);
-            margin-bottom: 12px;
-            padding: 4px 0;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
         }
 
-        .weather-summary {
-            display: flex;
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--gray-100);
             font-size: 0.75rem;
             color: var(--gray-600);
         }
 
         .weather-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 4px;
+            padding: 8px;
+            background: var(--gray-50);
+            border-radius: 6px;
         }
 
-        /* Modal - Clean & Professional */
+        .weather-icon {
+            font-size: 1rem;
+        }
+
+        .weather-label {
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .weather-value {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 40px;
+            animation: slideInFromBottom 0.8s ease-out both;
+            animation-delay: 0.4s;
+            opacity: 0;
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .chart-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-hint {
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            margin-top: 16px;
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -351,58 +821,69 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
             background: white;
-            margin: 40px auto;
-            border-radius: 12px;
-            max-width: 560px;
-            max-height: calc(100vh - 80px);
+            margin: 5% auto;
+            border-radius: var(--border-radius-lg);
+            max-width: 600px;
+            max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
-            padding: 20px 24px;
+            padding: 24px;
             border-bottom: 1px solid var(--gray-200);
             position: relative;
         }
 
-        .modal-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 2px;
-        }
-
-        .modal-subtitle {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-        }
-
-        .close-btn {
+        .modal-close {
             position: absolute;
-            right: 16px;
-            top: 16px;
+            right: 20px;
+            top: 20px;
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--gray-400);
-            line-height: 1;
+            transition: all 0.2s;
             width: 32px;
             height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
-            transition: all 0.15s;
+            border-radius: 50%;
         }
 
-        .close-btn:hover {
+        .modal-close:hover {
             background: var(--gray-100);
             color: var(--gray-600);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .modal-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
         }
 
         .modal-score-section {
@@ -415,16 +896,17 @@
         .modal-score {
             font-size: 3rem;
             font-weight: 700;
-            line-height: 1;
             margin-bottom: 8px;
         }
 
         .modal-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             font-size: 0.875rem;
             font-weight: 600;
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
-            display: inline-block;
             color: white;
         }
 
@@ -444,21 +926,23 @@
             font-size: 0.875rem;
             font-weight: 600;
             color: var(--gray-700);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .factor-list {
-            list-style: none;
+        .factors-grid {
+            display: grid;
+            gap: 8px;
         }
 
         .factor-item {
-            padding: 10px 12px;
-            background: var(--gray-50);
-            border-radius: 6px;
-            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 12px 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
             font-size: 0.8125rem;
         }
 
@@ -469,18 +953,18 @@
 
         .factor-impact {
             font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 0.75rem;
         }
 
         .factor-impact.positive {
-            background: #d1fae5;
-            color: #065f46;
+            background: #dcfce7;
+            color: #166534;
         }
 
         .factor-impact.negative {
-            background: #fee2e2;
+            background: #fef2f2;
             color: #991b1b;
         }
 
@@ -489,33 +973,40 @@
             color: var(--gray-600);
         }
 
-        .weather-grid {
+        .weather-details-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
 
-        .weather-box {
-            background: var(--gray-50);
+        .weather-detail {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             padding: 12px;
-            border-radius: 6px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .weather-detail-icon {
+            font-size: 1.25rem;
+            width: 32px;
             text-align: center;
         }
 
-        .weather-icon {
-            font-size: 1.25rem;
-            margin-bottom: 4px;
+        .weather-detail-content {
+            flex: 1;
         }
 
-        .weather-label {
-            font-size: 0.6875rem;
+        .weather-detail-label {
+            font-size: 0.75rem;
             color: var(--gray-500);
-            margin-bottom: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
 
-        .weather-value {
+        .weather-detail-value {
             font-size: 0.875rem;
             font-weight: 600;
             color: var(--gray-900);
@@ -523,147 +1014,282 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
+            .hero {
+                padding: 60px 0 80px;
             }
 
-            .search-group {
-                flex-direction: column;
+            .hero-title {
+                font-size: 2.5rem;
             }
 
-            .btn {
+            .search-section {
+                margin: -40px 20px 0;
+                padding: 24px;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .search-input, .search-btn, .map-toggle {
                 width: 100%;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .best-times-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .chart-section {
+                padding: 20px;
+                margin-bottom: 20px;
             }
 
             .chart-container {
                 height: 280px;
             }
 
-            .best-times-grid {
+            .modal-content {
+                margin: 10px;
+                max-width: calc(100vw - 20px);
+            }
+
+            .weather-details-grid {
                 grid-template-columns: 1fr;
             }
 
-            .modal-content {
-                margin: 20px;
-                max-width: calc(100% - 40px);
+            .time-card {
+                padding: 20px;
             }
 
-            .weather-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .time-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
             }
 
-            .logo-text h1 {
-                font-size: 1.2rem;
+            .score-badge {
+                align-self: flex-end;
             }
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
         }
 
-        ::-webkit-scrollbar-track {
+        .loading .status-message {
+            animation: pulse 2s infinite;
+        }
+
+        .loading .status-message::after {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+            margin-left: 8px;
+            animation: loadingDots 1.5s infinite;
+        }
+
+        @keyframes loadingDots {
+            0%, 20% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .suggestions::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .suggestions::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 2px;
+        }
+
+        .suggestions::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.3);
+            border-radius: 2px;
+        }
+
+        .suggestions::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.5);
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 8px 12px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
             background: var(--gray-100);
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--gray-300);
-            border-radius: 4px;
+        .lang-btn:hover {
+            background: var(--gray-200);
+            transform: translateY(-1px);
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-400);
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+                gap: 6px;
+                padding: 6px 8px;
+            }
+
+            .lang-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">🎣</div>
-                <div class="logo-text">
-                    <h1>Fishing Optimizer</h1>
-                    <p>Enterprise Edition</p>
-                </div>
-            </div>
-        </div>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="tr" onclick="updatePageLanguage('tr')">Türkçe</button>
+        <button class="lang-btn" data-lang="en" onclick="updatePageLanguage('en')">English</button>
     </div>
 
-    <!-- Container -->
-    <div class="container">
-        <!-- Search Section -->
-        <div class="search-section">
-            <label class="search-label">Location</label>
-            <div class="search-group">
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    class="search-input" 
-                    placeholder="Search city or region..."
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="fish">🐟</div>
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="hero-content">
+            <span class="hero-icon">🎣</span>
+            <h1 class="hero-title">Balık Avı Optimizer</h1>
+            <p class="hero-subtitle">
+                Hava durumu verilerini analiz ederek balık avı için en optimum zamanları bulun.
+                Bilimsel algoritmalarımızla başarılı avlanma şansınızı artırın.
+            </p>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <h2 class="search-title">Konum Seçin</h2>
+        <p class="search-subtitle">Balık avı yapmak istediğiniz şehri veya bölgeyi arayın</p>
+
+        <div class="search-container">
+            <div style="position: relative; flex: 1;">
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="İstanbul, Ankara, İzmir..."
                     autocomplete="off"
                 >
-                <button class="btn btn-primary" onclick="searchLocation()">Search</button>
-                <button class="btn btn-outline" onclick="toggleMap()">Map</button>
+                <div id="suggestions" class="suggestions"></div>
             </div>
-            <ul id="suggestions" class="suggestions"></ul>
-            <div id="map"></div>
+            <button class="map-toggle" onclick="toggleMap()">
+                📍 Haritadan Seç
+            </button>
+            <button class="search-btn" onclick="handleSearch(event)">
+                Ara
+            </button>
         </div>
 
-        <!-- Messages -->
-        <div class="error" id="error"></div>
-        <div class="loading" id="loading">Loading data...</div>
+        <div id="map" class="map-container"></div>
+    </section>
 
-        <!-- Location Info -->
-        <div class="location-info" id="locationInfo"></div>
-
-        <!-- Chart Section -->
-        <div class="chart-section" id="chartSection">
-            <div class="section-header">
-                <div>
-                    <div class="section-title">Activity Forecast</div>
-                    <div class="section-subtitle">72-hour prediction model</div>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="fishingChart"></canvas>
-            </div>
-            <div class="chart-hint">Click on any bar to view detailed analysis</div>
+    <!-- Status Messages -->
+    <div class="container">
+        <div id="loading" class="status-message loading">
+            Hava durumu verileri analiz ediliyor...
         </div>
+        <div id="error" class="status-message error"></div>
+    </div>
 
-        <!-- Best Times -->
-        <div class="best-times-section" id="bestTimesSection">
-            <div class="best-times-header">
-                <div class="section-title">Optimal Windows</div>
-                <div class="section-subtitle">Best conditions for fishing</div>
+    <!-- Results Section -->
+    <div class="container">
+        <section class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2 class="results-title" id="resultsTitle">Optimum Zamanlar</h2>
+                <p class="results-subtitle" id="resultsSubtitle">En iyi balık avı koşulları için önerilen zamanlar</p>
             </div>
+
             <div class="best-times-grid" id="bestTimesGrid"></div>
-        </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title" id="chartTitle">72 Saatlik Tahmin</h3>
+                        <p class="chart-subtitle" id="chartSubtitle">Balık aktivitesi skorları</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="fishingChart"></canvas>
+                </div>
+                <p class="chart-hint" id="chartHint">Grafik çubuklarına tıklayarak detaylı analizi görebilirsiniz</p>
+            </div>
+        </section>
     </div>
 
     <!-- Modal -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-                <div class="modal-title" id="modalDate"></div>
-                <div class="modal-subtitle" id="modalTime"></div>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h3 class="modal-title" id="modalDate"></h3>
+                <p class="modal-subtitle" id="modalTime"></p>
             </div>
+
             <div class="modal-score-section">
                 <div class="modal-score" id="modalScore"></div>
                 <div class="modal-category" id="modalLabel"></div>
             </div>
+
             <div class="modal-body">
                 <div class="modal-section">
-                    <div class="modal-section-title">Impact Factors</div>
-                    <ul class="factor-list" id="modalFactors"></ul>
+                    <h4 class="modal-section-title" id="impactFactorsTitle">Etki Faktörleri</h4>
+                    <div class="factors-grid" id="modalFactors"></div>
                 </div>
+
                 <div class="modal-section">
-                    <div class="modal-section-title">Weather Conditions</div>
-                    <div class="weather-grid" id="modalWeather"></div>
+                    <h4 class="modal-section-title" id="weatherDetailsTitle">Hava Durumu</h4>
+                    <div class="weather-details-grid" id="modalWeather"></div>
                 </div>
             </div>
         </div>
@@ -677,16 +1303,88 @@
         let fishingChart = null;
         let currentData = null;
 
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            initSearch();
+            updatePageLanguage(getCurrentLanguage());
+        });
+
+        // Arama inputunu başlat
+        function initSearch() {
+            const searchInput = document.getElementById('searchInput');
+
+            searchInput.addEventListener('input', async function(e) {
+                const query = e.target.value.trim();
+                const suggestions = document.getElementById('suggestions');
+
+                if (query.length < 2) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/geocode?query=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+
+                    suggestions.innerHTML = '';
+                    suggestions.style.display = 'block';
+
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(location => {
+                            const item = document.createElement('div');
+                            item.className = 'suggestion-item';
+                            item.textContent = `${location.name}${location.admin1 ? ', ' + location.admin1 : ''}${location.country ? ', ' + location.country : ''}`;
+                            item.onclick = () => selectLocation(location);
+                            suggestions.appendChild(item);
+                        });
+                    } else {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'suggestion-item no-results';
+                        noResults.innerHTML = `
+                            <span style="font-size: 1.1rem;">🔍</span>
+                            <span>${t('noResultsMessage')}</span>
+                        `;
+                        noResults.style.color = 'var(--gray-500)';
+                        noResults.style.cursor = 'default';
+                        noResults.style.justifyContent = 'center';
+                        noResults.style.fontStyle = 'italic';
+                        suggestions.appendChild(noResults);
+                    }
+                } catch (error) {
+                    console.error('Arama hatası:', error);
+                }
+            });
+
+            // Enter ile arama
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSearch(e);
+                }
+            });
+
+            // Dışarı tıklayınca önerileri kapat
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target)) {
+                    document.getElementById('suggestions').style.display = 'none';
+                }
+            });
+        }
+
         // Harita toggle
         function toggleMap() {
             const mapElement = document.getElementById('map');
+            const toggleBtn = document.querySelector('.map-toggle');
+
             if (mapElement.style.display === 'none' || !mapElement.style.display) {
                 mapElement.style.display = 'block';
+                toggleBtn.textContent = '🗺️ Haritayı Gizle';
                 if (!map) {
                     initMap();
                 }
             } else {
                 mapElement.style.display = 'none';
+                toggleBtn.textContent = '📍 Haritadan Seç';
             }
         }
 
@@ -707,48 +1405,18 @@
                 map.removeLayer(marker);
             }
             marker = L.marker([lat, lng]).addTo(map);
-            selectedLocation = { latitude: lat, longitude: lng, name: `Seçili Konum` };
+            selectedLocation = { latitude: lat, longitude: lng, name: `Seçili Konum (${lat.toFixed(4)}, ${lng.toFixed(4)})` };
             fetchWeatherData(lat, lng, selectedLocation.name);
         }
-
-        // Arama inputu
-        document.getElementById('searchInput').addEventListener('input', async function(e) {
-            const query = e.target.value.trim();
-            const suggestionsList = document.getElementById('suggestions');
-            
-            if (query.length < 2) {
-                suggestionsList.innerHTML = '';
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/geocode?query=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                
-                suggestionsList.innerHTML = '';
-                
-                if (data.results && data.results.length > 0) {
-                    data.results.forEach(location => {
-                        const li = document.createElement('li');
-                        li.className = 'suggestion-item';
-                        li.textContent = `${location.name}${location.admin1 ? ', ' + location.admin1 : ''}${location.country ? ', ' + location.country : ''}`;
-                        li.onclick = () => selectLocation(location);
-                        suggestionsList.appendChild(li);
-                    });
-                }
-            } catch (error) {
-                console.error('Arama hatası:', error);
-            }
-        });
 
         // Lokasyon seç
         function selectLocation(location) {
             selectedLocation = location;
             document.getElementById('searchInput').value = location.name;
-            document.getElementById('suggestions').innerHTML = '';
-            
+            document.getElementById('suggestions').style.display = 'none';
+
             fetchWeatherData(location.latitude, location.longitude, location.name);
-            
+
             if (map) {
                 map.setView([location.latitude, location.longitude], 10);
                 if (marker) {
@@ -758,12 +1426,24 @@
             }
         }
 
-        // Arama butonu
-        function searchLocation() {
+        // Arama işlemini yönet
+        function handleSearch(event) {
+            event.preventDefault();
             const query = document.getElementById('searchInput').value.trim();
+
             if (query.length < 2) {
-                showError('Lütfen en az 2 karakter girin');
+                showError(t('errorMinChars'));
                 return;
+            }
+
+            // İlk sonucu otomatik seç (eğer varsa)
+            const suggestions = document.getElementById('suggestions');
+            const firstItem = suggestions.querySelector('.suggestion-item:not([style*="color: var(--gray-500)"])');
+
+            if (firstItem) {
+                firstItem.click();
+            } else {
+                showError(t('errorNoResults'));
             }
         }
 
@@ -771,20 +1451,20 @@
         async function fetchWeatherData(lat, lon, locationName) {
             showLoading(true);
             hideError();
-            
+
             try {
                 const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-                
+
                 if (!response.ok) {
                     throw new Error('Veri alınamadı');
                 }
-                
+
                 const data = await response.json();
                 currentData = data;
                 displayResults(data, locationName);
-                
+
             } catch (error) {
-                showError('Hava durumu verileri alınamadı. Lütfen tekrar deneyin.');
+                showError(t('errorFetch'));
                 console.error('API Hatası:', error);
             } finally {
                 showLoading(false);
@@ -793,52 +1473,60 @@
 
         // Sonuçları göster
         function displayResults(data, locationName) {
-            // Lokasyon bilgisi
-            document.getElementById('locationInfo').textContent = `📍 ${locationName}`;
-            document.getElementById('locationInfo').style.display = 'block';
+            // Sonuçlar bölümünü göster
+            document.getElementById('resultsSection').style.display = 'block';
 
             // Grafik oluştur
-            createChart(data);
-            document.getElementById('chartSection').style.display = 'block';
+            window.createChart(data);
 
-            // En iyi zamanlar
+            // En iyi zamanları göster
             displayBestTimes(data);
+
+            // Sayfa başına scroll
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Grafik oluştur - Enterprise style
-        function createChart(data) {
+        // Grafik oluştur
+        window.createChart = function(data) {
             const ctx = document.getElementById('fishingChart').getContext('2d');
-            
+
             if (fishingChart) {
                 fishingChart.destroy();
             }
 
-            const labels = data.hourly.map(h => {
+            const labels = data.hourly.slice(0, 72).map(h => {
                 const date = new Date(h.time);
                 const day = date.getDate();
-                const month = date.toLocaleDateString('en-US', { month: 'short' });
+                const month = date.toLocaleDateString('tr-TR', { month: 'short' });
                 const hour = date.getHours().toString().padStart(2, '0');
                 return `${month} ${day}, ${hour}:00`;
             });
 
-            const scores = data.hourly.map(h => h.score);
-            const colors = data.hourly.map(h => h.category.color);
+            const scores = data.hourly.slice(0, 72).map(h => h.score);
+            const colors = data.hourly.slice(0, 72).map(h => h.category.color);
 
             fishingChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Activity Score',
+                        label: t('chartYAxisLabel'),
                         data: scores,
                         backgroundColor: colors,
-                        borderRadius: 3,
+                        borderRadius: 4,
                         borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart',
+                        delay: function(context) {
+                            return context.dataIndex * 50;
+                        }
+                    },
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
                             const index = elements[0].index;
@@ -858,9 +1546,10 @@
                             callbacks: {
                                 label: function(context) {
                                     const hour = data.hourly[context.dataIndex];
+                                    const translatedLabel = translateCategoryLabel(hour.category.label);
                                     return [
-                                        `Score: ${context.parsed.y}`,
-                                        `Status: ${hour.category.label}`
+                                        `${t('chartYAxisLabel')}: ${context.parsed.y}`,
+                                        `${t('status')}: ${translatedLabel}`
                                     ];
                                 }
                             }
@@ -871,22 +1560,22 @@
                             beginAtZero: true,
                             max: 100,
                             grid: {
-                                color: '#f3f4f6'
+                                color: '#f1f5f9'
                             },
                             ticks: {
                                 font: {
                                     size: 11
                                 },
-                                color: '#6b7280'
+                                color: '#64748b'
                             },
                             title: {
                                 display: true,
-                                text: 'Activity Score',
+                                text: t('chartYAxisLabel'),
                                 font: {
                                     size: 12,
                                     weight: '500'
                                 },
-                                color: '#374151'
+                                color: '#334155'
                             }
                         },
                         x: {
@@ -899,69 +1588,97 @@
                                 font: {
                                     size: 10
                                 },
-                                color: '#6b7280'
+                                color: '#64748b'
                             }
                         }
                     }
                 }
             });
         }
-
-        // En iyi zamanları göster
         function displayBestTimes(data) {
             const grid = document.getElementById('bestTimesGrid');
             grid.innerHTML = '';
 
             if (data.bestTimes && data.bestTimes.length > 0) {
-                data.bestTimes.forEach(time => {
-                    const card = createBestTimeCard(time);
+                data.bestTimes.forEach((time, index) => {
+                    const card = createBestTimeCard(time, index);
                     grid.appendChild(card);
                 });
-                document.getElementById('bestTimesSection').style.display = 'block';
+            } else {
+                const noResults = document.createElement('div');
+                noResults.className = 'time-card';
+                noResults.style.setProperty('--card-index', 0);
+                noResults.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">🤷‍♂️</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: 8px;">
+                            ${t('noResultsMessage')}
+                        </h3>
+                        <p style="color: var(--gray-600);">
+                            ${t('noResultsDescription')}
+                        </p>
+                    </div>
+                `;
+                grid.appendChild(noResults);
             }
         }
 
-        // En iyi zaman kartı oluştur - Enterprise minimal
-        function createBestTimeCard(time) {
+        // En iyi zaman kartı oluştur
+        function createBestTimeCard(time, index) {
             const card = document.createElement('div');
-            card.className = 'time-card';
+            card.className = `time-card ${getCardClass(time.category.label)}`;
+            card.style.setProperty('--card-index', index);
             card.onclick = () => showDetailModal(time);
 
+            const currentLang = getCurrentLanguage();
             const date = new Date(time.time);
-            const dateStr = date.toLocaleDateString('en-US', { 
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric'
-            });
-            const timeStr = date.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: false
-            });
+            const dateStr = date.toLocaleDateString(
+                currentLang === 'tr' ? 'tr-TR' : 'en-US',
+                {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                }
+            );
+            const timeStr = date.toLocaleTimeString(
+                currentLang === 'tr' ? 'tr-TR' : 'en-US',
+                {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
+
+            const categoryClass = getCategoryClass(time.category.label);
 
             card.innerHTML = `
-                <div class="time-card-header">
+                <div class="time-header">
                     <div class="time-info">
-                        <div class="time-date">${dateStr}</div>
-                        <div class="time-hour">${timeStr}</div>
+                        <h3>${dateStr}</h3>
+                        <div class="time-date">${timeStr}</div>
                     </div>
                     <div class="score-badge" style="background: ${time.category.color}">
                         ${time.score}
                     </div>
                 </div>
-                <div class="time-category">${time.category.label}</div>
-                <div class="weather-summary">
+                <div class="time-category ${categoryClass}">
+                    <span>${time.category.emoji}</span>
+                    ${translateCategoryLabel(time.category.label)}
+                </div>
+                <div class="weather-grid">
                     <div class="weather-item">
-                        <span>🌡️</span>
-                        <span>${time.weather.temperature.toFixed(0)}°C</span>
+                        <span class="weather-icon">🌡️</span>
+                        <span class="weather-label">${t('temperature')}</span>
+                        <span class="weather-value">${time.weather.temperature.toFixed(0)}°C</span>
                     </div>
                     <div class="weather-item">
-                        <span>💨</span>
-                        <span>${time.weather.windSpeed.toFixed(0)} km/h</span>
+                        <span class="weather-icon">💨</span>
+                        <span class="weather-label">${t('wind')}</span>
+                        <span class="weather-value">${time.weather.windSpeed.toFixed(1)} km/s</span>
                     </div>
                     <div class="weather-item">
-                        <span>☁️</span>
-                        <span>${time.weather.cloudCover}%</span>
+                        <span class="weather-icon">☁️</span>
+                        <span class="weather-label">${t('cloud')}</span>
+                        <span class="weather-value">${time.weather.cloudCover}%</span>
                     </div>
                 </div>
             `;
@@ -969,80 +1686,222 @@
             return card;
         }
 
-        // Detay modalını göster - Enterprise style
+        // Kart sınıfını belirle
+        function getCardClass(label) {
+            switch (label) {
+                case 'Mükemmel':
+                case 'Excellent':
+                    return 'excellent';
+                case 'Çok İyi':
+                case 'Very Good':
+                    return 'good';
+                case 'İyi':
+                case 'Good':
+                    return 'fair';
+                default:
+                    return 'poor';
+            }
+        }
+
+        // Kategori sınıfını belirle
+        function getCategoryClass(label) {
+            switch (label) {
+                case 'Mükemmel':
+                case 'Excellent':
+                    return 'excellent';
+                case 'Çok İyi':
+                case 'Very Good':
+                    return 'good';
+                case 'İyi':
+                case 'Good':
+                    return 'fair';
+                default:
+                    return 'poor';
+            }
+        }
+
+        // Detay modalını göster
         function showDetailModal(hourData) {
             const date = new Date(hourData.time);
-            
-            // Tarih ve saat
-            document.getElementById('modalDate').textContent = date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('modalTime').textContent = date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
+            const currentLang = getCurrentLanguage();
+
+            // Tarih ve saat - dile göre format
+            document.getElementById('modalDate').textContent = date.toLocaleDateString(
+                currentLang === 'tr' ? 'tr-TR' : 'en-US', 
+                {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }
+            );
+            document.getElementById('modalTime').textContent = date.toLocaleTimeString(
+                currentLang === 'tr' ? 'tr-TR' : 'en-US',
+                {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
 
             // Skor
             document.getElementById('modalScore').textContent = hourData.score;
             document.getElementById('modalScore').style.color = hourData.category.color;
-            
+
             const labelElement = document.getElementById('modalLabel');
-            labelElement.textContent = hourData.category.label;
+            labelElement.textContent = `${hourData.category.emoji} ${translateCategoryLabel(hourData.category.label)}`;
             labelElement.style.background = hourData.category.color;
 
             // Faktörler
-            const factorsList = document.getElementById('modalFactors');
-            factorsList.innerHTML = '';
+            const factorsContainer = document.getElementById('modalFactors');
+            factorsContainer.innerHTML = '';
             hourData.factors.forEach(factor => {
-                const li = document.createElement('li');
-                li.className = 'factor-item';
-                
+                const item = document.createElement('div');
+                item.className = 'factor-item';
+
                 const impactClass = factor.impact > 0 ? 'positive' : factor.impact < 0 ? 'negative' : 'neutral';
                 const impactText = factor.impact > 0 ? `+${factor.impact}` : factor.impact;
-                
-                li.innerHTML = `
-                    <div class="factor-name"><strong>${factor.name}:</strong> ${factor.value}</div>
+
+                // Factor name çevirisi
+                const factorNameTranslated = translateFactorName(factor.name);
+                const factorValueTranslated = translateFactorValue(factor.value);
+
+                item.innerHTML = `
+                    <div class="factor-name"><strong>${factorNameTranslated}:</strong> ${factorValueTranslated}</div>
                     <span class="factor-impact ${impactClass}">${impactText}</span>
                 `;
-                factorsList.appendChild(li);
+                factorsContainer.appendChild(item);
             });
 
             // Hava durumu
-            const weatherGrid = document.getElementById('modalWeather');
-            weatherGrid.innerHTML = `
-                <div class="weather-box">
-                    <div class="weather-icon">🌡️</div>
-                    <div class="weather-label">Temp</div>
-                    <div class="weather-value">${hourData.weather.temperature.toFixed(1)}°C</div>
+            const weatherContainer = document.getElementById('modalWeather');
+            weatherContainer.innerHTML = `
+                <div class="weather-detail">
+                    <div class="weather-detail-icon">🌡️</div>
+                    <div class="weather-detail-content">
+                        <div class="weather-detail-label">${t('temperature')}</div>
+                        <div class="weather-detail-value">${hourData.weather.temperature.toFixed(1)}°C</div>
+                    </div>
                 </div>
-                <div class="weather-box">
-                    <div class="weather-icon">💨</div>
-                    <div class="weather-label">Wind</div>
-                    <div class="weather-value">${hourData.weather.windSpeed.toFixed(1)} km/h</div>
+                <div class="weather-detail">
+                    <div class="weather-detail-icon">💨</div>
+                    <div class="weather-detail-content">
+                        <div class="weather-detail-label">${t('windSpeed')}</div>
+                        <div class="weather-detail-value">${hourData.weather.windSpeed.toFixed(1)} km/s</div>
+                    </div>
                 </div>
-                <div class="weather-box">
-                    <div class="weather-icon">☁️</div>
-                    <div class="weather-label">Cloud</div>
-                    <div class="weather-value">${hourData.weather.cloudCover}%</div>
+                <div class="weather-detail">
+                    <div class="weather-detail-icon">☁️</div>
+                    <div class="weather-detail-content">
+                        <div class="weather-detail-label">${t('cloudCover')}</div>
+                        <div class="weather-detail-value">${hourData.weather.cloudCover}%</div>
+                    </div>
                 </div>
-                <div class="weather-box">
-                    <div class="weather-icon">🌧️</div>
-                    <div class="weather-label">Rain</div>
-                    <div class="weather-value">${hourData.weather.precipitation.toFixed(1)} mm</div>
+                <div class="weather-detail">
+                    <div class="weather-detail-icon">🌧️</div>
+                    <div class="weather-detail-content">
+                        <div class="weather-detail-label">${t('precipitation')}</div>
+                        <div class="weather-detail-value">${hourData.weather.precipitation.toFixed(1)} mm</div>
+                    </div>
                 </div>
-                <div class="weather-box">
-                    <div class="weather-icon">📊</div>
-                    <div class="weather-label">Pressure</div>
-                    <div class="weather-value">${hourData.weather.pressure.toFixed(0)} hPa</div>
+                <div class="weather-detail">
+                    <div class="weather-detail-icon">📊</div>
+                    <div class="weather-detail-content">
+                        <div class="weather-detail-label">${t('pressure')}</div>
+                        <div class="weather-detail-value">${hourData.weather.pressure.toFixed(0)} hPa</div>
+                    </div>
                 </div>
             `;
 
             // Modalı göster
             document.getElementById('detailModal').style.display = 'block';
+        }
+        
+        // Factor name çevirisi
+        function translateFactorName(factorName) {
+            const factorMap = {
+                'Sıcaklık': t('factorTemperature'),
+                'Basınç': t('factorPressure'),
+                'Basınç Trendi': t('factorPressureTrend'),
+                'Rüzgar Hızı': t('factorWindSpeed'),
+                'Yağış': t('factorPrecipitation'),
+                'Bulutluluk': t('factorCloudCover'),
+                'Gün Saati': t('factorTimeOfDay'),
+                'Ay Evresi': t('factorMoonPhase')
+            };
+            return factorMap[factorName] || factorName;
+        }
+        
+        // Kategori label çevirisi
+        function translateCategoryLabel(label) {
+            const categoryMap = {
+                'Mükemmel': t('categories.excellent'),
+                'Çok İyi': t('categories.veryGood'),
+                'İyi': t('categories.good'),
+                'Orta': t('categories.fair'),
+                'Zayıf': t('categories.poor')
+            };
+            return categoryMap[label] || label;
+        }
+        
+        // Factor value çevirisi
+        function translateFactorValue(factorValue) {
+            // Özel durumlar için doğrudan çeviri
+            if (factorValue === 'Öğle (En Kötü)') {
+                return getCurrentLanguage() === 'tr' ? 'Öğle (En Kötü)' : 'Noon (Worst)';
+            }
+            if (factorValue === 'Çok Sakin') {
+                return getCurrentLanguage() === 'tr' ? 'Çok Sakin' : 'Calm';
+            }
+            if (factorValue === 'Altın Saatler (Şafak/Alacakaranlık)') {
+                return getCurrentLanguage() === 'tr' ? 'Altın Saatler (Şafak/Alacakaranlık)' : 'Golden Hours (Dawn/Dusk)';
+            }
+            
+            const valueMap = {
+                // Temperature
+                'Optimal': t('optimal'),
+                'Orta': t('medium'),
+                'Zayıf': t('poor'),
+                // Pressure
+                'Stabil': t('stable'),
+                'Aşırı': t('extreme'),
+                'Normal': t('normal'),
+                // Pressure Trend
+                'Hızlı Düşüyor': t('fastDecreasing'),
+                'Düşüyor': t('decreasing'),
+                'Hızlı Yükseliyor': t('fastIncreasing'),
+                'Yükseliyor': t('increasing'),
+                // Wind
+                'İdeal': t('idealWind'),
+                'Çok Güçlü': t('veryStrong'),
+                // Precipitation
+                'Şiddetli Yağmur': t('heavyRain'),
+                'Hafif Yağmur': t('lightRain'),
+                'Orta Yağmur': t('mediumRain'),
+                'Yok': t('noRain'),
+                // Cloud cover
+                'Çok Bulutlu': t('veryCloudy'),
+                'Çok Açık': t('veryClear'),
+                // Time of day
+                'İyi Saatler': t('goodHours'),
+                'Gece': t('night'),
+                // Moon phases
+                'Yeni Ay': t('newMoon'),
+                'Dolunay': t('fullMoon'),
+                'İlk Dördün': t('firstQuarter'),
+                'Son Dördün': t('lastQuarter'),
+                'Normal Evre': t('normalPhase')
+            };
+            
+            // Value'nin başında derecesi/birimi varsa ayır
+            const match = factorValue.match(/^(.+?)\s*\(([^)]+)\)$/);
+            if (match) {
+                const mainValue = match[1];
+                const unit = match[2];
+                const translatedMain = valueMap[mainValue] || mainValue;
+                return unit ? `${translatedMain} (${unit})` : translatedMain;
+            }
+            
+            return valueMap[factorValue] || factorValue;
         }
 
         // Modal kapat
@@ -1060,7 +1919,9 @@
 
         // Yardımcı fonksiyonlar
         function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            const loadingElement = document.getElementById('loading');
+            loadingElement.textContent = t('loadingMessage');
+            loadingElement.style.display = show ? 'block' : 'none';
         }
 
         function showError(message) {
@@ -1072,13 +1933,6 @@
         function hideError() {
             document.getElementById('error').style.display = 'none';
         }
-
-        // Enter tuşu ile arama
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchLocation();
-            }
-        });
     </script>
 </body>
 </html>
