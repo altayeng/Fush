@@ -1,6 +1,7 @@
 # Fishing Optimizer
 
 An intelligent application that predicts the optimal times for shore fishing (rod and reel) using meteorological data.
+Live on: http://80.225.227.121/
 
 ## Features
 
@@ -54,3 +55,4 @@ MIT
 ---
 
 **Note**: This tool provides weather-based predictions. Actual fish activity is also affected by local conditions (water temperature, salinity, species, etc.).
+
